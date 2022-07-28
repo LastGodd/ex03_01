@@ -9,8 +9,22 @@
 			select * from tbl_board where bno > 0 order by bno
 		]]>
 	</select>
+	
+	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+		<![CDATA[
+			select /*+ index_desc(tbl_board pk_board) */ bno, title, content, writer, regdate, updatedate
+			from (
+				select
+					rownum rn, bno, title, content, writer, regdate, updatedate
+				from
+					tbl_board
+				where rownum <= #{pageNum} * #{amount}
+				)
+			where rn > (#{pageNum} -1) * #{amount}
+		]]>
+	</select>
 
-	<select id="get" resultType="org.zerock.domain.BoardVO">
+	<select id="read" resultType="org.zerock.domain.BoardVO">
 		select * from tbl_board where bno =
 		#{bno}
 	</select>

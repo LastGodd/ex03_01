@@ -132,7 +132,7 @@
 								<c:forEach items="${list }" var="list">
 									<tr>
 										<th scope="row"><c:out value="${list.bno }"></c:out></th>
-										<td><a
+										<td><a class='move'
 											href='/board/get?bno=<c:out value="${list.bno }"/>'><c:out
 													value="${list.title }"></c:out></a></td>
 										<td><c:out value="${list.writer }"></c:out></td>
@@ -147,13 +147,41 @@
 					</div>
 				</div>
 			</div>
-			<div>
-				<button type="button" onclick="location.href='register'"
-					class="btn btn-default right">Register</button>
-			</div>
+
 			<!-- table_end -->
 		</div>
 	</div>
+	<div class="container-fluid pt-4 px-4">
+		<div class="col-sm-12">
+			<div class="bg-secondary rounded h-100 p-4">
+				<!-- <h6 class="mb-4">Page</h6> -->
+				<div class="btn-toolbar" role="toolbar">
+					<div>
+						<button type="button" onclick="location.href='register'"
+							class="btn btn-default right">Register</button>
+					</div>
+
+					<div class="btn-group me-2 align-items-center ms-auto" role="group" aria-label="First group">
+						<c:if test="${pageMaker.prev }">
+							<a class="paginate_button previous" href='<c:out value="${pageMaker.startPage - 1}"/>'><button type="button" class="btn btn-secondary">Previous</button></a>
+						</c:if>
+					
+						<c:forEach var="num" begin="${pageMaker.startPage }" end="${pageMaker.endPage }">
+							<a class="paginate_button" href='<c:out value="${num }"/>'><button type="button" class="${pageMaker.cri.pageNum == num ? 'btn btn-primary active' : 'btn btn-secondary' }">${num }</button></a>
+						</c:forEach>
+						
+						<c:if test="${pageMaker.next }">
+							<a class="paginate_button next" href='<c:out value="${pageMaker.endPage + 1}"/>'><button type="button" class="btn btn-secondary">Next</button></a>
+						</c:if>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form id="actionForm" action="/board/list" method="get">
+		<input type="hidden" name="pageNum" value='<c:out value="${pageMaker.cri.pageNum }"/>'/>
+		<input type="hidden" name="pageNum" value='<c:out value="${pageMaker.cri.amount }"/>'/>
+	</form>
 
 	<!-- Table End -->
 	<%@include file="../includes/footer.jsp"%>
@@ -161,11 +189,13 @@
 </div>
 <!-- Content End -->
 
+
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		var result = '<c:out value="${result}"/>';
 		checkModal(result);
-		
+
 		history.replaceState({}, null, null);
 
 		function checkModal(result) {
@@ -177,5 +207,22 @@
 			}
 			$("#myModal").modal('show');
 		}
+		
+		var actionForm = $("#actionForm");
+		
+		$(".paginate_button").on("click", function(e){
+			e.preventDefault();
+			console.log("click");
+			actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+			actionForm.submit();
+		});
+		
+		
+		$(".move").on("click", function(e){
+			e.preventDefault();
+			actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"'>");
+			actionForm.attr("action", "/board/get");
+			actionForm.submit();
+		});
 	});
 </script>
